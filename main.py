@@ -6,7 +6,7 @@ from idnes_scraper import scrape_idnes
 from irozhlas_sraper import scrape_irozhlas
 
 # 🔹 Klíčová slova pro filtrování článků
-KEYWORDS = ["armáda", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
+KEYWORDS = ["armáda", "armáda české republiky", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják"]
 
 def contains_keywords(text):
     """Ověří, zda text obsahuje některé z klíčových slov"""
