@@ -30,7 +30,7 @@ def get_articles(source: str = None):
     conn.close()
     return articles
 
-@app.get("/")
+@app.get("/scrape")
 def home():
     return {"message": "Vítejte v News API! Použijte /articles pro získání novinek."}
 
