@@ -8,7 +8,7 @@ def job():
     print("✅ Hotovo! Články byly staženy a uloženy.")
 
 # Naplánování úlohy na každý den v 9:00
-schedule.every().day.at("12:40").do(job)
+schedule.every().day.at("12:47").do(job)
 
 print("⏳ Čekám na naplánovaný čas...")
 while True:
