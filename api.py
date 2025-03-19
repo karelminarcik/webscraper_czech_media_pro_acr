@@ -1,7 +1,20 @@
 from fastapi import FastAPI, Query
 import sqlite3
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# 🔹 Povolíme přístup jen z konkrétní domény
+origins = ["https://rentaacr.cz"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Povolí jen rentaacr.cz
+    allow_credentials=True,
+    allow_methods=["*"],  # Povolit všechny HTTP metody
+    allow_headers=["*"],  # Povolit všechny hlavičky
+)
 
 def get_articles(source: str = None):
     """Načte články z databáze, volitelně filtrováno podle zdroje."""
