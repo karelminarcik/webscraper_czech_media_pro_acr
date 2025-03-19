@@ -1,7 +1,7 @@
 import requests
 import time
 
-URL = "https://webscraper-czech-media.onrender.com/articles"
+URL = "https://webscraper-czech-media.onrender.com"
 
 while True:
     try:
