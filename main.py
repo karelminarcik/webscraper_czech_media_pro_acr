@@ -1,34 +1,27 @@
-import requests
-from bs4 import BeautifulSoup
 import sqlite3
+from datetime import datetime
 from seznam_scraper import scrape_seznam
 from idnes_scraper import scrape_idnes
 from irozhlas_sraper import scrape_irozhlas
-
-# 🔹 Klíčová slova pro filtrování článků
-KEYWORDS = ["armáda", "armáda české republiky", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják"]
-
-def contains_keywords(text):
-    """Ověří, zda text obsahuje některé z klíčových slov"""
-    return any(keyword.lower() in text.lower() for keyword in KEYWORDS)
-
-
 
 # 🔹 Vytvoření databáze
 def create_db():
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
-    
+
+    # ❗️ Pokud tabulka existuje bez `date_added`, smažeme ji a vytvoříme novou
+    cursor.execute("DROP TABLE IF EXISTS articles")
+
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS articles (
+        CREATE TABLE articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             link TEXT UNIQUE,
             source TEXT,
-            date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            date_added TEXT  -- Ukládáme datum jako text YYYY-MM-DD
         )
     """)
-    
+
     conn.commit()
     conn.close()
 
@@ -37,20 +30,30 @@ def save_to_db(articles):
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
 
+    today_date = datetime.now().strftime("%Y-%m-%d")  # Aktuální datum
+
     for article in articles:
         try:
             cursor.execute("""
-                INSERT INTO articles (title, link, source) VALUES (?, ?, ?)
-            """, (article["title"], article["link"], article["source"]))
+                INSERT INTO articles (title, link, source, date_added) 
+                VALUES (?, ?, ?, ?)
+            """, (article["title"], article["link"], article["source"], today_date))
         except sqlite3.IntegrityError:
             continue  # Pokud je článek už v DB, přeskočíme
 
     conn.commit()
+
+    # ✅ Kontrola: Vypíšeme 5 nejnovějších článků
+    cursor.execute("SELECT * FROM articles ORDER BY id DESC LIMIT 5")
+    print("✅ Poslední články v databázi:")
+    for row in cursor.fetchall():
+        print(row)
+
     conn.close()
 
 # 🔹 Hlavní funkce: Scrapování a ukládání do DB
 def main():
-    create_db()  # Vytvoří databázi, pokud neexistuje
+    create_db()  # Smaže starou tabulku a vytvoří novou se správnou strukturou
 
     all_articles = []
     all_articles.extend(scrape_irozhlas())
