@@ -44,3 +44,25 @@ def scrape(background_tasks: BackgroundTasks):
     """Spustí scraping na pozadí a uloží články do databáze."""
     background_tasks.add_task(main)
     return {"message": "Scraping byl spuštěn na pozadí."}
+
+# 🔥 **Smazání článků podle ID nebo zdroje**
+@app.delete("/articles")
+def delete_articles(id: int = Query(None, description="ID článku ke smazání"), source: str = Query(None, description="Zdroj ke smazání")):
+    """Smaže článek podle ID nebo všechny články ze zdroje."""
+    conn = sqlite3.connect("news.db")
+    cursor = conn.cursor()
+
+    if id:
+        cursor.execute("DELETE FROM articles WHERE id = ?", (id,))
+        conn.commit()
+        conn.close()
+        return {"message": f"Článek s ID {id} byl smazán."}
+
+    if source:
+        cursor.execute("DELETE FROM articles WHERE source = ?", (source,))
+        conn.commit()
+        conn.close()
+        return {"message": f"Všechny články ze zdroje '{source}' byly smazány."}
+
+    conn.close()
+    raise HTTPException(status_code=400, detail="Musíte zadat buď ID článku, nebo zdroj ke smazání.")
