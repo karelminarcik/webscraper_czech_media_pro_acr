@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # 🔹 Klíčová slova pro filtrování článků
-KEYWORDS = ["armáda","armáda české republiky", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
+KEYWORDS = ["evropa", "policie","armáda","armáda české republiky", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
 
 def contains_keywords(text):
     """Ověří, zda text obsahuje některé z klíčových slov"""
