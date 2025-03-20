@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Query
 import sqlite3
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import BackgroundTasks
 from main import main
@@ -19,16 +18,16 @@ app.add_middleware(
 )
 
 def get_articles(source: str = None):
-    """Načte články z databáze, volitelně filtrováno podle zdroje."""
+    """Načte články z databáze, volitelně filtrováno podle zdroje, včetně data vložení."""
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
 
     if source:
-        cursor.execute("SELECT title, link, source FROM articles WHERE source = ?", (source,))
+        cursor.execute("SELECT title, link, source, date_added FROM articles WHERE source = ?", (source,))
     else:
-        cursor.execute("SELECT title, link, source FROM articles")
+        cursor.execute("SELECT title, link, source, date_added FROM articles ORDER BY date_added DESC")
 
-    articles = [{"title": row[0], "link": row[1], "source": row[2]} for row in cursor.fetchall()]
+    articles = [{"title": row[0], "link": row[1], "source": row[2], "date_added": row[3]} for row in cursor.fetchall()]
     conn.close()
     return articles
 
@@ -39,7 +38,6 @@ def home():
 @app.get("/articles")
 def read_articles(source: str = Query(None, description="Filtrujte podle zdroje (např. idnes.cz)")):
     return get_articles(source)
-
 
 @app.get("/scrape")
 def scrape(background_tasks: BackgroundTasks):
