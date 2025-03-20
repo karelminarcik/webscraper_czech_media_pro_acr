@@ -54,7 +54,7 @@ def main():
 
     all_articles = []
     all_articles.extend(scrape_irozhlas())
-    all_articles.extend(scrape_idnes())
+    # all_articles.extend(scrape_idnes())
     all_articles.extend(scrape_seznam())
 
     save_to_db(all_articles)  # Uloží články do databáze
