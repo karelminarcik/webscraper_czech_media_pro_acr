@@ -18,16 +18,16 @@ app.add_middleware(
 )
 
 def get_articles(source: str = None):
-    """Načte články z databáze, volitelně filtrováno podle zdroje, včetně data vložení."""
+    """Načte články z databáze, včetně ID, volitelně filtrováno podle zdroje."""
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
 
     if source:
-        cursor.execute("SELECT title, link, source, date_added FROM articles WHERE source = ?", (source,))
+        cursor.execute("SELECT id, title, link, source, date_added FROM articles WHERE source = ?", (source,))
     else:
-        cursor.execute("SELECT title, link, source, date_added FROM articles ORDER BY date_added DESC")
+        cursor.execute("SELECT id, title, link, source, date_added FROM articles ORDER BY date_added DESC")
 
-    articles = [{"title": row[0], "link": row[1], "source": row[2], "date_added": row[3]} for row in cursor.fetchall()]
+    articles = [{"id": row[0], "title": row[1], "link": row[2], "source": row[3], "date_added": row[4]} for row in cursor.fetchall()]
     conn.close()
     return articles
 
