@@ -20,7 +20,7 @@ def scrape_idnes():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")  # Důležité pro běh na serveru
     options.add_argument("--remote-debugging-port=9222")  # Debugging pro server
-    options.binary_location = "/usr/bin/chromium-browser"  # Cesta k Chromium (Render)
+    options.binary_location = "/usr/bin/chromium"  # Předinstalované Chromium
 
     # 🔹 Použití WebDriverManager pro správné stažení Chromedriveru
     service = Service(ChromeDriverManager().install())
