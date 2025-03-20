@@ -9,9 +9,6 @@ def create_db():
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
 
-    # ❗️ Pokud tabulka existuje bez `date_added`, smažeme ji a vytvoříme novou
-    cursor.execute("DROP TABLE IF EXISTS articles")
-
     cursor.execute("""
         CREATE TABLE articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
