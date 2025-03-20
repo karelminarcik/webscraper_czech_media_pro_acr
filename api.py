@@ -2,6 +2,8 @@ from fastapi import FastAPI, Query
 import sqlite3
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import BackgroundTasks
+from main import main
 
 app = FastAPI()
 
@@ -37,3 +39,10 @@ def home():
 @app.get("/articles")
 def read_articles(source: str = Query(None, description="Filtrujte podle zdroje (např. idnes.cz)")):
     return get_articles(source)
+
+
+@app.get("/scrape")
+def scrape(background_tasks: BackgroundTasks):
+    """Spustí scraping na pozadí a uloží články do databáze."""
+    background_tasks.add_task(main)
+    return {"message": "Scraping byl spuštěn na pozadí."}
