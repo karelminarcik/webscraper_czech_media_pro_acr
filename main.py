@@ -4,13 +4,13 @@ from seznam_scraper import scrape_seznam
 from idnes_scraper import scrape_idnes
 from irozhlas_sraper import scrape_irozhlas
 
-# 🔹 Vytvoření databáze
+# 🔹 Vytvoření databáze (pouze pokud neexistuje)
 def create_db():
     conn = sqlite3.connect("news.db")
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE articles (
+        CREATE TABLE IF NOT EXISTS articles (  -- ✅ IF NOT EXISTS zabrání přepsání tabulky
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             link TEXT UNIQUE,
@@ -50,11 +50,11 @@ def save_to_db(articles):
 
 # 🔹 Hlavní funkce: Scrapování a ukládání do DB
 def main():
-    create_db()  # Smaže starou tabulku a vytvoří novou se správnou strukturou
+    create_db()  # ✅ Už se nevytváří nová tabulka, pokud existuje
 
     all_articles = []
     all_articles.extend(scrape_irozhlas())
-    # all_articles.extend(scrape_idnes())
+    all_articles.extend(scrape_idnes())
     all_articles.extend(scrape_seznam())
 
     save_to_db(all_articles)  # Uloží články do databáze
