@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException  # Přidán import HTTPException
 import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import BackgroundTasks
