@@ -4,32 +4,33 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import os
 
-# 🔹 Klíčová slova pro filtrování článků
 KEYWORDS = ["armáda", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
 
 def contains_keywords(text):
-    """Ověří, zda text obsahuje některé z klíčových slov"""
     return any(keyword.lower() in text.lower() for keyword in KEYWORDS)
 
 def scrape_idnes():
-    """Scraper pro iDnes.cz pomocí Selenium"""
     options = Options()
-    options.add_argument("--headless")  
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")  # Důležité pro běh na serveru
-    options.add_argument("--remote-debugging-port=9222")  # Debugging pro server
-    options.binary_location = "/usr/bin/chromium"  # Předinstalované Chromium
+    options.add_argument("--disable-dev-shm-usage")
+    
+    # 🔹 Automaticky detekuje Chromium
+    possible_paths = ["/usr/bin/chromium", "/usr/bin/chromium-browser"]
+    for path in possible_paths:
+        if os.path.exists(path):
+            options.binary_location = path
+            break
 
-    # 🔹 Použití WebDriverManager pro správné stažení Chromedriveru
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     URL = "https://www.idnes.cz/zpravy/domaci"
     driver.get(URL)
-
-    time.sleep(3)  # Počkáme na načtení stránky
+    time.sleep(3)
 
     articles = []
     news_items = driver.find_elements(By.CLASS_NAME, "art-link")
@@ -37,11 +38,10 @@ def scrape_idnes():
     for item in news_items:
         title = item.text.strip()
         link = item.get_attribute("href")
-        # Kontrola klíčových slov
         if contains_keywords(title):
             articles.append({"title": title, "link": link, "source": "idnes.cz"})
 
-    driver.quit()  # Zavřeme prohlížeč
+    driver.quit()
     return articles
 
 # Testování scraperu
