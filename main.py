@@ -3,6 +3,7 @@ from datetime import datetime
 from seznam_scraper import scrape_seznam
 from idnes_scraper import scrape_idnes
 from irozhlas_sraper import scrape_irozhlas
+from acr_mo_gov import scrape_acr
 
 # 🔹 Vytvoření databáze (pouze pokud neexistuje)
 def create_db():
@@ -56,6 +57,7 @@ def main():
     all_articles.extend(scrape_irozhlas())
     # all_articles.extend(scrape_idnes())
     all_articles.extend(scrape_seznam())
+    all_articles.extend(scrape_acr())
 
     save_to_db(all_articles)  # Uloží články do databáze
 
