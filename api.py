@@ -3,6 +3,7 @@ import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import BackgroundTasks
 from main import main
+import shutil
 
 app = FastAPI()
 
@@ -66,3 +67,9 @@ def delete_articles(id: int = Query(None, description="ID článku ke smazání"
 
     conn.close()
     raise HTTPException(status_code=400, detail="Musíte zadat buď ID článku, nebo zdroj ke smazání.")
+
+# kontrola zda a kde je nainstalovan chromium
+@app.get("/check_chromium")
+def check_chromium():
+    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
+    return {"chromium_path": chromium_path or "Chromium není nainstalováno"}
