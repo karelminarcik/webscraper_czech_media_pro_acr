@@ -82,8 +82,4 @@ def check_chromium():
         "env_PATH": env_path.split(":")  # Rozdělení PATH pro lepší čitelnost
     }
     
-    
-@app.get("/list_bin")
-def list_bin():
-    bin_files = os.listdir("/usr/bin")  # Seznam souborů v /usr/bin
-    return {"usr_bin": bin_files}
+
