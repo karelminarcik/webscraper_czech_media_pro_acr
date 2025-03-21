@@ -5,6 +5,7 @@ from fastapi import BackgroundTasks
 from main import main
 import shutil
 import os
+import subprocess
 
 app = FastAPI()
 
@@ -73,13 +74,14 @@ def delete_articles(id: int = Query(None, description="ID článku ke smazání"
 @app.get("/check_chromium")
 def check_chromium():
     chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
-    
-    # Ladicí výpis pro zjištění proměnných prostředí
-    env_path = os.environ.get("PATH", "Nedefinováno")
+
+    # Zkusíme zjistit, jestli Chromium existuje
+    find_chromium = subprocess.run(["find", "/usr", "-name", "chromium*"], capture_output=True, text=True)
     
     return {
         "chromium_path": chromium_path or "Chromium není nainstalováno",
-        "env_PATH": env_path.split(":")  # Rozdělení PATH pro lepší čitelnost
+        "env_PATH": os.environ.get("PATH", "Nedefinováno").split(":"),
+        "find_result": find_chromium.stdout.strip()
     }
-    
+
 

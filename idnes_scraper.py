@@ -4,33 +4,38 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-import os
+import shutil
 
+# 🔹 Klíčová slova pro filtrování článků
 KEYWORDS = ["armáda", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
 
 def contains_keywords(text):
+    """Ověří, zda text obsahuje některé z klíčových slov"""
     return any(keyword.lower() in text.lower() for keyword in KEYWORDS)
 
 def scrape_idnes():
+    """Scraper pro iDnes.cz pomocí Selenium"""
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless")  
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    
-    # 🔹 Automaticky detekuje Chromium
-    possible_paths = ["/usr/bin/chromium", "/usr/bin/chromium-browser"]
-    for path in possible_paths:
-        if os.path.exists(path):
-            options.binary_location = path
-            break
+    options.add_argument("--disable-dev-shm-usage")  # Nutné pro běh na Render.com
 
+    # 🛠 Zjisti cestu k Chromium
+    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
+    if chromium_path:
+        options.binary_location = chromium_path
+    else:
+        raise Exception("❌ Chromium není nainstalováno!")
+
+    # 🔹 Použití WebDriverManager pro Chromedriver
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     URL = "https://www.idnes.cz/zpravy/domaci"
     driver.get(URL)
-    time.sleep(3)
+
+    time.sleep(3)  # Počkáme na načtení stránky
 
     articles = []
     news_items = driver.find_elements(By.CLASS_NAME, "art-link")
@@ -38,10 +43,11 @@ def scrape_idnes():
     for item in news_items:
         title = item.text.strip()
         link = item.get_attribute("href")
+        # Kontrola klíčových slov
         if contains_keywords(title):
             articles.append({"title": title, "link": link, "source": "idnes.cz"})
 
-    driver.quit()
+    driver.quit()  # Zavřeme prohlížeč
     return articles
 
 # Testování scraperu
