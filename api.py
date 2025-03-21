@@ -72,4 +72,11 @@ def delete_articles(id: int = Query(None, description="ID článku ke smazání"
 @app.get("/check_chromium")
 def check_chromium():
     chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
-    return {"chromium_path": chromium_path or "Chromium není nainstalováno"}
+    
+    # Ladicí výpis pro zjištění proměnných prostředí
+    env_path = os.environ.get("PATH", "Nedefinováno")
+    
+    return {
+        "chromium_path": chromium_path or "Chromium není nainstalováno",
+        "env_PATH": env_path.split(":")  # Rozdělení PATH pro lepší čitelnost
+    }
