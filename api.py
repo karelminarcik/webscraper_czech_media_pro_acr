@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import BackgroundTasks
 from main import main
 import shutil
+import os
 
 app = FastAPI()
 
@@ -80,3 +81,9 @@ def check_chromium():
         "chromium_path": chromium_path or "Chromium není nainstalováno",
         "env_PATH": env_path.split(":")  # Rozdělení PATH pro lepší čitelnost
     }
+    
+    
+@app.get("/list_bin")
+def list_bin():
+    bin_files = os.listdir("/usr/bin")  # Seznam souborů v /usr/bin
+    return {"usr_bin": bin_files}
