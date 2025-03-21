@@ -84,11 +84,3 @@ def check_chromium():
         "find_result": find_chromium.stdout.strip()
     }
 
-@app.get("/list_usr_bin")
-def list_usr_bin():
-    try:
-        # Spustí příkaz `ls -la /usr/bin/` a vrátí výstup
-        result = subprocess.run(["ls", "-la", "/usr/bin/"], capture_output=True, text=True)
-        return {"output": result.stdout}
-    except Exception as e:
-        return {"error": str(e)}
