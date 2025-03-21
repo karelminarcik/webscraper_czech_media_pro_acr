@@ -4,7 +4,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-import shutil
 
 # 🔹 Klíčová slova pro filtrování článků
 KEYWORDS = ["armáda", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
@@ -19,16 +18,11 @@ def scrape_idnes():
     options.add_argument("--headless")  
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")  # Nutné pro běh na Render.com
+    options.add_argument("--disable-dev-shm-usage")  # Důležité pro běh na serveru
+    options.add_argument("--remote-debugging-port=9222")  # Debugging pro server
+    options.binary_location = "/usr/bin/chromium"  # Předinstalované Chromium
 
-    # 🛠 Zjisti cestu k Chromium
-    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
-    if chromium_path:
-        options.binary_location = chromium_path
-    else:
-        raise Exception("❌ Chromium není nainstalováno!")
-
-    # 🔹 Použití WebDriverManager pro Chromedriver
+    # 🔹 Použití WebDriverManager pro správné stažení Chromedriveru
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
