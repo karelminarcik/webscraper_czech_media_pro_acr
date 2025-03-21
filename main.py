@@ -56,7 +56,7 @@ def main():
 
     all_articles = []
     all_articles.extend(scrape_irozhlas())
-    all_articles.extend(scrape_idnes())
+    # all_articles.extend(scrape_idnes())
     all_articles.extend(scrape_seznam())
     all_articles.extend(scrape_acr())
     all_articles.extend(scrape_denik())

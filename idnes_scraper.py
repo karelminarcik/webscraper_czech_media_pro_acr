@@ -1,10 +1,10 @@
 import os
 import time
-import chromedriver_autoinstaller
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 
 # 🔹 Klíčová slova pro filtrování článků
 KEYWORDS = ["armáda", "vojáci", "AČR", "obrana", "ministerstvo obrany", "vojenské", "zásah", "cvičení", "voják", "střelbě"]
@@ -22,14 +22,18 @@ def get_driver():
     options.add_argument("--disable-dev-shm-usage")  # Lepší výkon v omezeném prostředí
     options.add_argument("--remote-debugging-port=9222")  # Debugging pro server
 
-    # 🔹 Použití cesty k předinstalovanému Chrome
+    # 🔹 Pokud je definována proměnná GOOGLE_CHROME_BIN, použijeme ji
     chrome_bin = os.environ.get("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
     options.binary_location = chrome_bin
 
-    # 🔹 Automatická instalace Chromedriveru
-    chromedriver_autoinstaller.install()
+    # 🔹 Pokud je definován CHROMEDRIVER_PATH, použijeme ho, jinak stáhneme pomocí WebDriverManager
+    chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+    if chromedriver_path:
+        service = Service(chromedriver_path)
+    else:
+        service = Service(ChromeDriverManager().install())
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service, options=options)
     return driver
 
 def scrape_idnes():
