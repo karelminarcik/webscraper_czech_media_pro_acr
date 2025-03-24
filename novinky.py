@@ -1,54 +1,47 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
+from bs4 import BeautifulSoup
 
-URL = "https://www.novinky.cz/sekce/domaci-13"
+# 🔹 Klíčová slova pro filtrování článků
+KEYWORDS = ["NATO","armáda české republiky", "armáda","armádní", "armádních", "vojáci","vojáků", "AČR", "obrana", "ministerstvo obrany", "vojenské", "Vojenští", "zásah", "cvičení", "voják"]
 
-def chrom_driver():
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option("detach", True)
-    chrome_options.add_argument("--log-level=3")
+def contains_keywords(text):
+    """Ověří, zda text obsahuje některé z klíčových slov"""
+    return any(keyword.lower() in text.lower() for keyword in KEYWORDS)
 
-    driver = webdriver.Chrome(options=chrome_options)
-    return driver
+def scrape_seznam():
+    URL = "https://www.seznam.cz"
+    response = requests.get(URL)
+    articles = []
 
-def handle_consent(driver):
-    try:
-        # Počkej max. 10 sekund, zda jsme přesměrováni na seznam.cz pro souhlas
-        WebDriverWait(driver, 10).until(EC.url_contains("cmp.seznam.cz"))
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        news_items = [h3 for div in soup.find_all("div", class_="font-14 article__text-box") for h3 in div.find_all("h3")]
 
-        # Najdi a klikni na tlačítko "Souhlasím"
-        souhlas_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 
-                "div > div > div.dialog-intro.dialog-scrollable > div > ul > li.lg-min\\:d-grid.g-md.gtr-subgrid.gr-span-5.md-max\\:o-1 > div > button"))
-        )
-        driver.execute_script("arguments[0].click();", souhlas_button)
-        print("Kliknuto na tlačítko 'Souhlasím'.")
+        for item in news_items:
+            # Najít <a> tag v každém článku
+            a_tag = item.find('a')
 
-        # Počkej na přesměrování na novinky.cz
-        WebDriverWait(driver, 10).until(EC.url_contains("novinky.cz"))
-        print("Přesměrování dokončeno.")
+            # Získání odkazu a titulku
+            if a_tag:  # Zajistíme, že <a> tag existuje
+                link = a_tag['href']
+                print(link)
+                title = a_tag.get_text()
 
-    except Exception as e:
-        print("Tlačítko 'Souhlasím' nebylo nalezeno nebo nešlo kliknout.", e)
+                # Oprava linku, pokud nezačíná 'http'
+                if not link.startswith("http"):
+                    link = f"https://www.seznamzpravy.cz{link}"
 
-def find_articles(driver):
-    try:
-        driver.get(URL)  # Otevři hlavní stránku
-        handle_consent(driver)  # Ošetření souhlasu
+                # Pokud titul obsahuje klíčová slova, přidáme článek do seznamu
+                if contains_keywords(title):
+                    articles.append({"title": title, "link": link, "source": "seznamzpravy.cz"})
+    
+    return articles
 
-        # Počkej na načtení prvního článku
-        article = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.mol-articles-container article"))
-        ).text
-        print("Nalezený článek:", article)
-
-    except Exception as e:
-        print("Články nebyly nalezeny:", e)
-
+# Testování scraperu
 if __name__ == "__main__":
-    driver = chrom_driver()
-    find_articles(driver)
-    driver.quit()
+    articles = scrape_seznam()
+    for article in articles:
+        print(article)  # Zobrazení informací o článcích
+
+
+
