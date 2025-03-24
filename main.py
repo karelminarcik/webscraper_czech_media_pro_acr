@@ -5,6 +5,7 @@ from idnes_scraper import scrape_idnes
 from irozhlas_sraper import scrape_irozhlas
 from acr_mo_gov import scrape_acr
 from denik_scraper import scrape_denik
+from novinky import scrape_novinky
 
 # 🔹 Vytvoření databáze (pouze pokud neexistuje)
 def create_db():
@@ -60,6 +61,7 @@ def main():
     all_articles.extend(scrape_seznam())
     all_articles.extend(scrape_acr())
     all_articles.extend(scrape_denik())
+    all_articles.extend(scrape_novinky())
 
     save_to_db(all_articles)  # Uloží články do databáze
 
@@ -67,3 +69,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Funguje
