@@ -7,7 +7,8 @@ from acr_mo_gov import scrape_acr
 from denik_scraper import scrape_denik
 from novinky import scrape_novinky
 from aktualne_sraper import scrape_aktualne
-
+from mocr_mo_gov import scrape_mocr
+ 
 # 🔹 Vytvoření databáze (pouze pokud neexistuje)
 def create_db():
     conn = sqlite3.connect("news.db")
@@ -64,6 +65,8 @@ def main():
     all_articles.extend(scrape_denik())
     all_articles.extend(scrape_novinky())
     all_articles.extend(scrape_aktualne())
+    all_articles.extend(scrape_mocr())
+    
     
 
     save_to_db(all_articles)  # Uloží články do databáze
