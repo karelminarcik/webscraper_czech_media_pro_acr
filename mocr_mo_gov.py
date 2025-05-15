@@ -25,7 +25,7 @@ def scrape_mocr():
                 link = title_tag.find('a')['href']
                 if not link.startswith("http"):
                     link = f"https://mocr.mo.gov.cz{link}"
-                if contains_keywords(title):
+                if True:
                     articles.append({"title": title, "link": link, "source": "mocr.mo.gov.cz"})
     
     return articles

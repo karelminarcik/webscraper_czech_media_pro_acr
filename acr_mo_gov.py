@@ -24,7 +24,7 @@ def scrape_acr():
                 link = title_tag.find('a')['href']
                 if not link.startswith("http"):
                     link = f"https://acr.mo.gov.cz{link}"
-                if contains_keywords(title):
+                if True:
                     articles.append({"title": title, "link": link, "source": "acr.mo.gov.cz"})
     
     return articles
