@@ -1,0 +1,27 @@
+Jak spustit Docker image arc-articles-scraper-api.tar
+
+    Ujisti se, že máš nainstalovaný Docker Desktop (Windows/Mac) nebo Docker Engine (Linux).
+
+    Načti image do Dockeru:
+
+bash
+docker load -i arc-articles-scraper-api.tar
+
+Po načtení ověř, že je image k dispozici:
+
+bash
+docker images
+
+Měl bys vidět arc-articles-scraper-api v seznamu.
+
+Spusť kontejner:
+
+bash
+docker run -p 8000:8000 arc-articles-scraper-api
+
+(Pokud potřebuješ persistentní databázi, můžeš přidat volume:
+-v $(pwd)/news.db:/app/news.db)
+
+Otevři v prohlížeči:
+http://localhost:8000
+nebo http://localhost:8000/docs (FastAPI dokumentace)

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, HTTPException  # Přidán import HTTPExcepti
 import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import BackgroundTasks
-from main import main
+from scraper import main
 import shutil
 import os
 import subprocess
@@ -10,7 +10,7 @@ import subprocess
 app = FastAPI()
 
 # 🔹 Povolíme přístup jen z konkrétní domény
-origins = ["https://rentaacr.cz"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -70,17 +70,4 @@ def delete_articles(id: int = Query(None, description="ID článku ke smazání"
     conn.close()
     raise HTTPException(status_code=400, detail="Musíte zadat buď ID článku, nebo zdroj ke smazání.")
 
-# kontrola zda a kde je nainstalovan chromium
-@app.get("/check_chromium")
-def check_chromium():
-    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
-
-    # Zkusíme zjistit, jestli Chromium existuje
-    find_chromium = subprocess.run(["find", "/usr", "-name", "chromium*"], capture_output=True, text=True)
-    
-    return {
-        "chromium_path": chromium_path or "Chromium není nainstalováno",
-        "env_PATH": os.environ.get("PATH", "Nedefinováno").split(":"),
-        "find_result": find_chromium.stdout.strip()
-    }
 
